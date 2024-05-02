@@ -1,14 +1,17 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:hotelhub/components/facility_cattegory_icon.dart';
+import 'package:hotelhub/database/database_service.dart';
 import 'package:hotelhub/model/hotel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HotelDetailPage extends StatefulWidget {
   final Map<String, dynamic> data;
+  bool book;
 
-  HotelDetailPage(this.data, {Key? key}) : super(key: key);
+  HotelDetailPage(this.data, this.book, {Key? key}) : super(key: key);
 
   @override
   State<HotelDetailPage> createState() => _HotelDetailPageState();
@@ -21,24 +24,24 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   @override
   void initState() {
     super.initState();
-    initPrefs();
+    // initPrefs();
   }
 
-  // Initialize shared preferences
-  void initPrefs() async {
-    _prefs = await SharedPreferences.getInstance();
-  }
+  // // Initialize shared preferences
+  // void initPrefs() async {
+  //   _prefs = await SharedPreferences.getInstance();
+  // }
 
-  // Function to add bookmark
-  void addBookmark(Map<String, dynamic> data) {
-    List<Map<String, dynamic>> bookmarks = [];
-    if (_prefs!.containsKey('bookmarks')) {
-      bookmarks = List<Map<String, dynamic>>.from(
-          json.decode(_prefs!.getString('bookmarks')!));
-    }
-    bookmarks.add(data);
-    _prefs!.setString('bookmarks', json.encode(bookmarks));
-  }
+  // // Function to add bookmark
+  // void addBookmark(Map<String, dynamic> data) {
+  //   List<Map<String, dynamic>> bookmarks = [];
+  //   if (_prefs!.containsKey('bookmarks')) {
+  //     bookmarks = List<Map<String, dynamic>>.from(
+  //         json.decode(_prefs!.getString('bookmarks')!));
+  //   }
+  //   bookmarks.add(data);
+  //   _prefs!.setString('bookmarks', json.encode(bookmarks));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -71,30 +74,40 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            widget.data['title'],
+                            widget.data['title'] ?? "ini kosong",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
                           ),
-                          IconButton(
-                            icon: Icon(
-                              isBookmarked
-                                  ? Icons.bookmark
-                                  : Icons.bookmark_border,
-                              color: Colors.pink,
-                              size: 35.0,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                isBookmarked = !isBookmarked;
-                                if (isBookmarked) {
-                                  addBookmark(widget
-                                      .data); // Add data to bookmark when bookmark icon is pressed
-                                }
-                              });
-                            },
-                          ),
+                          widget.book
+                              ? IconButton(
+                                  icon: Icon(
+                                    isBookmarked
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_border,
+                                    color: Colors.pink,
+                                    size: 35.0,
+                                  ),
+                                  onPressed: () {
+                                    // setState(() {
+                                    //   isBookmarked = !isBookmarked;
+                                    //   if (isBookmarked) {
+                                    //     addBookmark(widget
+                                    //         .data); // Add data to bookmark when bookmark icon is pressed
+                                    //   }
+                                    // });
+                                    print(widget.data);
+                                    DatabaseService.createItem(
+                                        widget.data['title'],
+                                        widget.data['UrlToImage'],
+                                        widget.data['category'],
+                                        widget.data['deskripsi'],
+                                        widget.data['lokasi'],
+                                        widget.data['price']);
+                                  },
+                                )
+                              : Container()
                         ],
                       ),
                       SizedBox(height: 8),

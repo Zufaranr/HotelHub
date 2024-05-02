@@ -39,7 +39,7 @@ class NewHotelList extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HotelDetailPage(data),
+            builder: (context) => HotelDetailPage(data,true),
           ),
         );
       },

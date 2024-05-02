@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     // Menunggu 2 detik menggunakan Future.delayed
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 3));
 
     // //pop the loading circle
     // Navigator.of(context).pop();
@@ -72,7 +72,8 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/logo.png', width: 200, height: 200),
+                Image.asset('assets/images/logohotel.png',
+                    width: 200, height: 200),
                 const SizedBox(height: 20.0),
                 Text(
                   "Login to continue",

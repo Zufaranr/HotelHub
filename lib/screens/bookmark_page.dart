@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hotelhub/database/database_service.dart';
 import 'package:hotelhub/screens/hotel_detail_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,41 +13,61 @@ class BookmarkPage extends StatefulWidget {
 }
 
 class _BookmarkPageState extends State<BookmarkPage> {
-  List<Map<String, dynamic>> bookmarks = [];
-  late SharedPreferences _prefs;
+  late List<Map<String, dynamic>> bookmarks;
+  bool _isLoading = true;
+  // late SharedPreferences _prefs;
 
   @override
   void initState() {
     super.initState();
-    initPrefs();
+    // initPrefs();
+    _refreshHotelList();
   }
 
-  void initPrefs() async {
-    _prefs = await SharedPreferences.getInstance();
-    loadBookmarks();
-  }
-
-  void loadBookmarks() {
+  Future<void> _refreshHotelList() async {
     setState(() {
-      bookmarks = _prefs.containsKey('bookmarks')
-          ? List<Map<String, dynamic>>.from(
-              json.decode(_prefs.getString('bookmarks')!))
-          : [];
+      _isLoading = true; // Set loading menjadi true
+    });
+    // Panggil metode untuk mengambil data dari SQLite
+    List<Map<String, dynamic>> data = await DatabaseService.getItems();
+    setState(() {
+      bookmarks = data; // Simpan data doa ke variabel lokal
+      _isLoading = false; // Set loading menjadi false
     });
   }
+  // void initPrefs() async {
+  //   _prefs = await SharedPreferences.getInstance();
+  //   loadBookmarks();
+  // }
 
-  void removeBookmark(int index) {
-    setState(() {
-      bookmarks.removeAt(index);
-      _prefs.setString('bookmarks', json.encode(bookmarks));
-    });
+  // void loadBookmarks() {
+  //   setState(() {
+  //     bookmarks = _prefs.containsKey('bookmarks')
+  //         ? List<Map<String, dynamic>>.from(
+  //             json.decode(_prefs.getString('bookmarks')!))
+  //         : [];
+  //   });
+  // }
+
+  // void removeBookmark(int index) {
+  //   setState(() {
+  //     bookmarks.removeAt(index);
+  //     _prefs.setString('bookmarks', json.encode(bookmarks));
+  //   });
+  // }
+
+  Future<void> _deleteItem(Map<String, dynamic> data) async {
+    // Hapus data dari SQLite
+    await DatabaseService.deleteItem(data['id']);
+    // Refresh halaman untuk memperbarui tampilan
+    _refreshHotelList();
   }
 
   void goToDetailPage(Map<String, dynamic> data) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => HotelDetailPage(data),
+        builder: (context) => HotelDetailPage(data,false),
       ),
     );
   }
@@ -57,10 +78,11 @@ class _BookmarkPageState extends State<BookmarkPage> {
       appBar: AppBar(
         title: Text('Bookmarks'),
       ),
-      body: bookmarks.isEmpty
-          ? Center(
-              child: Text('No bookmarks yet'),
-            )
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          // Center(
+          //     child: Text('No bookmarks yet'),
+          //   )
           : ListView.builder(
               itemCount: bookmarks.length,
               itemBuilder: (context, index) {
@@ -70,10 +92,11 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   elevation: 4,
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: NetworkImage(data['UrlToImage']),
+                      backgroundImage:
+                          NetworkImage(data['UrlToImage'] ?? "ini kosong"),
                     ),
-                    title: Text(data['title']),
-                    subtitle: Text(data['lokasi']),
+                    title: Text(data['title'] ?? "ini kosong"),
+                    subtitle: Text(data['lokasi'] ?? "ini kosong"),
                     onTap: () {
                       goToDetailPage(
                           data); // Navigate to detail page when tapped
@@ -81,7 +104,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {
-                        removeBookmark(index);
+                        _deleteItem(data);
                       },
                     ),
                   ),
