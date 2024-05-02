@@ -67,7 +67,8 @@ class DatabaseService {
     try {
       await db.delete("hotel2", where: "id = ?", whereArgs: [id]);
     } catch (err) {
-      debugPrint("Something went wrong when deleting an item: $err"); //diubah
+      debugPrint(
+          "There was an issue encountered while attempting to remove an item: $err");
     }
   }
 }

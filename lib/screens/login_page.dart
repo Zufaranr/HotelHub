@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black,
+                    color: Colors.blueAccent,
                   ),
                 ),
                 const SizedBox(height: 20.0),
@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.email,
-                      color: Colors.black,
+                      color: Colors.blueAccent,
                     ),
                     hintText: "Email Address",
                     filled: true,
@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.lock,
-                      color: Colors.black,
+                      color: Colors.blueAccent,
                     ),
                     hintText: "Password",
                     filled: true,
@@ -116,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+                      primary: Colors.blueAccent,
                       textStyle: TextStyle(
                         color: Colors.white,
                       ),
@@ -145,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         "Sign Up",
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Colors.blueAccent,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

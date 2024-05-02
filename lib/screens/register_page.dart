@@ -73,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black,
+                    color: Colors.blueAccent,
                   ),
                 ),
                 const SizedBox(height: 20.0),
@@ -82,7 +82,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.account_circle_outlined,
-                      color: Colors.black,
+                      color: Colors.blueAccent,
                     ),
                     hintText: "Username",
                     filled: true,
@@ -95,7 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.call_outlined,
-                      color: Colors.black,
+                      color: Colors.blueAccent,
                     ),
                     hintText: "Phone Number",
                     filled: true,
@@ -108,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.email,
-                      color: Colors.black,
+                      color: Colors.blueAccent,
                     ),
                     hintText: "Email Address",
                     filled: true,
@@ -121,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.lock,
-                      color: Colors.black,
+                      color: Colors.blueAccent,
                     ),
                     hintText: "Password",
                     filled: true,
@@ -135,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+                      primary: Colors.blueAccent,
                       textStyle: TextStyle(
                         color: Colors.white,
                       ),
@@ -164,7 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Text(
                         "Sign In",
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Colors.blueAccent,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

@@ -19,29 +19,12 @@ class HotelDetailPage extends StatefulWidget {
 
 class _HotelDetailPageState extends State<HotelDetailPage> {
   bool isBookmarked = false;
-  SharedPreferences? _prefs; // Shared Preferences instance
+  SharedPreferences? _prefs;
 
   @override
   void initState() {
     super.initState();
-    // initPrefs();
   }
-
-  // // Initialize shared preferences
-  // void initPrefs() async {
-  //   _prefs = await SharedPreferences.getInstance();
-  // }
-
-  // // Function to add bookmark
-  // void addBookmark(Map<String, dynamic> data) {
-  //   List<Map<String, dynamic>> bookmarks = [];
-  //   if (_prefs!.containsKey('bookmarks')) {
-  //     bookmarks = List<Map<String, dynamic>>.from(
-  //         json.decode(_prefs!.getString('bookmarks')!));
-  //   }
-  //   bookmarks.add(data);
-  //   _prefs!.setString('bookmarks', json.encode(bookmarks));
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -90,14 +73,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                                     size: 35.0,
                                   ),
                                   onPressed: () {
-                                    // setState(() {
-                                    //   isBookmarked = !isBookmarked;
-                                    //   if (isBookmarked) {
-                                    //     addBookmark(widget
-                                    //         .data); // Add data to bookmark when bookmark icon is pressed
-                                    //   }
-                                    // });
-                                    print(widget.data);
                                     DatabaseService.createItem(
                                         widget.data['title'],
                                         widget.data['UrlToImage'],

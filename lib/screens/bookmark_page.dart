@@ -15,51 +15,26 @@ class BookmarkPage extends StatefulWidget {
 class _BookmarkPageState extends State<BookmarkPage> {
   late List<Map<String, dynamic>> bookmarks;
   bool _isLoading = true;
-  // late SharedPreferences _prefs;
 
   @override
   void initState() {
     super.initState();
-    // initPrefs();
     _refreshHotelList();
   }
 
   Future<void> _refreshHotelList() async {
     setState(() {
-      _isLoading = true; // Set loading menjadi true
+      _isLoading = true;
     });
-    // Panggil metode untuk mengambil data dari SQLite
     List<Map<String, dynamic>> data = await DatabaseService.getItems();
     setState(() {
-      bookmarks = data; // Simpan data doa ke variabel lokal
-      _isLoading = false; // Set loading menjadi false
+      bookmarks = data;
+      _isLoading = false;
     });
   }
-  // void initPrefs() async {
-  //   _prefs = await SharedPreferences.getInstance();
-  //   loadBookmarks();
-  // }
-
-  // void loadBookmarks() {
-  //   setState(() {
-  //     bookmarks = _prefs.containsKey('bookmarks')
-  //         ? List<Map<String, dynamic>>.from(
-  //             json.decode(_prefs.getString('bookmarks')!))
-  //         : [];
-  //   });
-  // }
-
-  // void removeBookmark(int index) {
-  //   setState(() {
-  //     bookmarks.removeAt(index);
-  //     _prefs.setString('bookmarks', json.encode(bookmarks));
-  //   });
-  // }
 
   Future<void> _deleteItem(Map<String, dynamic> data) async {
-    // Hapus data dari SQLite
     await DatabaseService.deleteItem(data['id']);
-    // Refresh halaman untuk memperbarui tampilan
     _refreshHotelList();
   }
 
@@ -67,7 +42,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => HotelDetailPage(data,false),
+        builder: (context) => HotelDetailPage(data, false),
       ),
     );
   }
@@ -80,9 +55,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          // Center(
-          //     child: Text('No bookmarks yet'),
-          //   )
           : ListView.builder(
               itemCount: bookmarks.length,
               itemBuilder: (context, index) {
@@ -98,8 +70,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                     title: Text(data['title'] ?? "ini kosong"),
                     subtitle: Text(data['lokasi'] ?? "ini kosong"),
                     onTap: () {
-                      goToDetailPage(
-                          data); // Navigate to detail page when tapped
+                      goToDetailPage(data);
                     },
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
