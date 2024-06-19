@@ -29,13 +29,18 @@ Sqflite adalah sebuah plugin Flutter yang menyediakan antarmuka untuk mengakses 
 
 ## 1.Page Booking
 Halaman ini digunakan untuk mengisi form membooking hotel.
+
 <img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/5ff7f303-e27d-44de-a6c4-4ca4065175da">
 
 ## 2.Push Notification Local
-Fitur ini digunakan untuk memunculkan notifikasi ketika menambahkan dan menghapus bookmark, seperti dibawah
+Fitur ini digunakan untuk memunculkan notifikasi ketika menambahkan dan menghapus bookmark, seperti dibawah.
+
+<img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/ead5b60c-68ce-4166-9c24-bf6373d0b3a3">, <img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/c7c3f478-a802-40a8-8c77-dc0ba039f10a">
 
 ## 3. Kamera 
-Fitur ini digunakan untuk menambah dan mengganti foto profil pengguna
+Fitur ini digunakan untuk menambah dan mengganti foto profil pengguna.
+
+<img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/0d2eb161-798f-4cb0-8413-50414c4b07ea">, <img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/aee0b9da-5634-486b-87a4-8661b8d1d555">
 
  ## Refrence
  https://hotelhub-7be75-default-rtdb.firebaseio.com/
