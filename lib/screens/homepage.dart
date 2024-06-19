@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:hotelhub/components/category_buttons.dart';
 import 'package:hotelhub/components/hotel_list.dart';
@@ -13,8 +12,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late List<Map<String, dynamic>> allhoteldata = [];
+  List<Map<String, dynamic>> allhoteldata = [];
+  List<Map<String, dynamic>> filteredHotelData = [];
   bool isLoading = false; // New variable to track loading state
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -40,7 +41,9 @@ class _HomePageState extends State<HomePage> {
           allhoteldata.add(value);
         });
 
-        setState(() {});
+        setState(() {
+          filteredHotelData = allhoteldata;
+        });
       } else {
         throw Exception('Failed to load data');
       }
@@ -54,6 +57,26 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void filterSearchResults(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        filteredHotelData = allhoteldata;
+      });
+      return;
+    }
+
+    List<Map<String, dynamic>> tempList = [];
+    allhoteldata.forEach((hotel) {
+      if (hotel['title'].toLowerCase().contains(query.toLowerCase())) {
+        tempList.add(hotel);
+      }
+    });
+
+    setState(() {
+      filteredHotelData = tempList;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,48 +85,56 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Header(),
+              Header(
+                  searchController: searchController,
+                  onChanged: filterSearchResults),
               SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'Kategori',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(height: 8),
-              CategoryButtons(),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'Rekomendasi Hotel',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(height: 5),
+              searchController.text.isEmpty
+                  ? Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Kategori',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : Container(),
+              searchController.text.isEmpty ? SizedBox(height: 8) : Container(),
+              searchController.text.isEmpty ? CategoryButtons() : Container(),
+              searchController.text.isEmpty
+                  ? SizedBox(height: 10)
+                  : Container(),
+              searchController.text.isEmpty
+                  ? Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Rekomendasi Hotel',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : Container(),
+              searchController.text.isEmpty ? SizedBox(height: 5) : Container(),
               // Check if data is loading, if true show CircularProgressIndicator
               isLoading
                   ? Center(child: CircularProgressIndicator())
                   : ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: allhoteldata.length,
+                      itemCount: filteredHotelData.length,
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: () {
                             // Handle hotel item click here
                             // For now, just print a message
                             print(
-                                'Hotel clicked: ${allhoteldata[index]['title']}');
+                                'Hotel clicked: ${filteredHotelData[index]['title']}');
                           },
-                          child: NewHotelList(allhoteldata[index]),
+                          child: NewHotelList(filteredHotelData[index]),
                         );
                       },
                     ),
@@ -116,6 +147,15 @@ class _HomePageState extends State<HomePage> {
 }
 
 class Header extends StatelessWidget {
+  final TextEditingController searchController;
+  final Function(String) onChanged;
+
+  const Header({
+    Key? key,
+    required this.searchController,
+    required this.onChanged,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -149,12 +189,14 @@ class Header extends StatelessWidget {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: TextField(
+                controller: searchController,
                 decoration: InputDecoration(
                   hintText: 'Cari Hotel',
                   prefixIcon: Icon(Icons.search),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.all(15),
                 ),
+                onChanged: onChanged,
               ),
             ),
           ),

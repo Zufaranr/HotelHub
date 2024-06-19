@@ -4,7 +4,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:hotelhub/components/facility_cattegory_icon.dart';
 import 'package:hotelhub/database/database_service.dart';
-import 'package:hotelhub/model/hotel.dart';
+import 'package:hotelhub/screens/booking_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HotelDetailPage extends StatefulWidget {
@@ -80,6 +80,12 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                                         widget.data['deskripsi'],
                                         widget.data['lokasi'],
                                         widget.data['price']);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Berhasil menambahkan ke bookmark!'),
+                                      ),
+                                    );
                                   },
                                 )
                               : Container()
@@ -151,7 +157,12 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // Action when book button is pressed
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookingPage(widget.data),
+                          ),
+                        );
                       },
                       icon: Icon(Icons.add_shopping_cart,
                           color: Colors.white, size: 50),

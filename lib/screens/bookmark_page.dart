@@ -35,6 +35,11 @@ class _BookmarkPageState extends State<BookmarkPage> {
 
   Future<void> _deleteItem(Map<String, dynamic> data) async {
     await DatabaseService.deleteItem(data['id']);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Bookmark berhasil dihapus'),
+      ),
+    );
     _refreshHotelList();
   }
 

@@ -1,9 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hotelhub/screens/login_page.dart';
 import 'package:hotelhub/screens/settings_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -16,12 +21,25 @@ class _ProfilePageState extends State<ProfilePage> {
 
   late User? _user;
   String _username = "", _phoneNumber = "";
+  File? _image; // Variable to hold the selected image file
+  late SharedPreferences _prefs;
 
   @override
   void initState() {
     super.initState();
     _user = _auth.currentUser;
     _loadPhoneNumber();
+    _initPrefs();
+  }
+
+  Future<void> _initPrefs() async {
+    _prefs = await SharedPreferences.getInstance();
+    String? imagePath = _prefs.getString('profile_image');
+    if (imagePath != null && imagePath.isNotEmpty) {
+      setState(() {
+        _image = File(imagePath);
+      });
+    }
   }
 
   Future<void> _loadPhoneNumber() async {
@@ -42,6 +60,25 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // Method to open camera and select image
+  Future<void> openCamera() async {
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+
+    if (pickedImage == null) {
+      return;
+    }
+    setState(() {
+      _image = File(pickedImage.path);
+    });
+
+    _saveImage(pickedImage.path);
+  }
+
+  Future<void> _saveImage(String imagePath) async {
+    await _prefs.setString('profile_image', imagePath);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,14 +90,52 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.blue,
-              child: Icon(
-                Icons.person,
-                size: 60,
-                color: Colors.white,
-              ),
+            // Avatar Section
+            Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    openCamera();
+                  },
+                  child: Container(
+                    height: 120,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey[300],
+                      image: _image != null
+                          ? DecorationImage(
+                              image: FileImage(_image!),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                    ),
+                    child: _image == null
+                        ? Icon(
+                            Icons.person,
+                            size: 60,
+                            color: Colors.white,
+                          )
+                        : null,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.blue,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        openCamera();
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 20),
             Text(
@@ -99,8 +174,8 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icons.exit_to_app,
               title: 'Logout',
               onTap: () {
-                // Aksi saat logout dilakukan
-                Navigator.push(
+                _auth.signOut();
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage()),
                 );

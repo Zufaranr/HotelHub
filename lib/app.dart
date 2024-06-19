@@ -13,6 +13,7 @@ Future<void> main() async {
       apiKey: 'AIzaSyDFmYQSpG0XkfEXbI6Dlbxc1PL5GlaTQiQ',
       messagingSenderId: '114539225164',
       projectId: 'hotelhub-7be75',
+      // storageBucket: 'gs://hotelhub-7be75.appspot.com',
     ),
   );
   runApp(MyApp());
