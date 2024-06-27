@@ -4,7 +4,7 @@
 HotelHub merupakan aplikasi yang dirancang untuk memudahkan pengguna dalam memesan tiket hotel untuk destinasi anda.
 
 ## Review
-<img width="150" alt="home" src="https://github.com/Zufaranr/HotelHub/assets/153165214/5a834839-c522-4e01-a3e9-32a938056fc2">,<img width="150" alt="category" src="https://github.com/Zufaranr/HotelHub/assets/153165214/3ce51aef-61bf-4731-92cd-55f381d79357">,<img width="150" alt="profil" src="https://github.com/Zufaranr/HotelHub/assets/153165214/86586b3c-a9d1-4e38-b098-ae0bb7252809">,<img width="150" alt="detail" src="https://github.com/Zufaranr/HotelHub/assets/153165214/bd5d67a0-2ced-4e2d-b5d7-a8416a80b564">
+<img width="150" alt="home" src="https://github.com/Zufaranr/HotelHub/assets/153165214/5a834839-c522-4e01-a3e9-32a938056fc2">,<img width="150" alt="category" src="https://github.com/Zufaranr/HotelHub/assets/153165214/3ce51aef-61bf-4731-92cd-55f381d79357">,<img width="150" alt="profil" src="https://github.com/Zufaranr/HotelHub/assets/153165214/86586b3c-a9d1-4e38-b098-ae0bb7252809">,<img width="150" alt="detail" src="https://github.com/Zufaranr/HotelHub/assets/153165214/bd5d67a0-2ced-4e2d-b5d7-a8416a80b564">,
 
 ## Deskripsi
 # 1. Asynchronus Programming-Circullar Progres
@@ -23,6 +23,24 @@ Preferences shared adalah cara untuk menyimpan preferensi atau pengaturan penggu
 Sqflite adalah sebuah plugin Flutter yang menyediakan antarmuka untuk mengakses dan mengelola database SQLite di aplikasi Flutter. Dengan Sqflite, pengembang dapat membuat, membaca, memperbarui, dan menghapus data dalam database SQLite secara efisien menggunakan Dart.Untuk Implementasinya sendiri disini digunakan untuk menyimpan data hotel kedalam bookmark.
 
 <img width="150" alt="bookmark" src="https://github.com/Zufaranr/HotelHub/assets/153165214/32625db5-4d8b-4381-bc79-f4b90d2be8af">
+
+
+# UPDATE & ADD FITUR
+
+## 1.Page Booking
+Halaman ini digunakan untuk mengisi form membooking hotel.
+
+<img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/5ff7f303-e27d-44de-a6c4-4ca4065175da">
+
+## 2.Push Notification Local
+Fitur ini digunakan untuk memunculkan notifikasi ketika menambahkan dan menghapus bookmark, seperti dibawah.
+
+<img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/ead5b60c-68ce-4166-9c24-bf6373d0b3a3">, <img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/c7c3f478-a802-40a8-8c77-dc0ba039f10a">
+
+## 3. Kamera 
+Fitur ini digunakan untuk menambah dan mengganti foto profil pengguna.
+
+<img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/0d2eb161-798f-4cb0-8413-50414c4b07ea">, <img width="150" alt="seting1" src="https://github.com/Zufaranr/HotelHub/assets/153165214/aee0b9da-5634-486b-87a4-8661b8d1d555">
 
  ## Refrence
  https://hotelhub-7be75-default-rtdb.firebaseio.com/
