@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hotelhub/components/bottnavbar.dart';
+import 'package:hotelhub/database/booking_database_service.dart';
+import 'package:hotelhub/services/notif.dart';
 
 class BookingPage extends StatefulWidget {
-  final Map<String, dynamic> hotelData;
+  final Map<String, dynamic> data;
 
-  BookingPage(this.hotelData, {Key? key}) : super(key: key);
+  BookingPage(this.data, {Key? key}) : super(key: key);
 
   @override
   _BookingPageState createState() => _BookingPageState();
@@ -11,11 +14,93 @@ class BookingPage extends StatefulWidget {
 
 class _BookingPageState extends State<BookingPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   DateTime? _checkInDate;
   DateTime? _checkOutDate;
+
+  @override
+  void initState() {
+    super.initState();
+    Noto.init(); // Initialize notifications
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType keyboardType = TextInputType.text,
+    required String? Function(String?) validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label),
+      keyboardType: keyboardType,
+      validator: validator,
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context, DateTime? initialDate,
+      Function(DateTime) onDateSelected) async {
+    DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: initialDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (date != null) {
+      onDateSelected(date);
+    }
+  }
+
+  Future<void> _confirmBooking() async {
+    if (_formKey.currentState!.validate() &&
+        _checkInDate != null &&
+        _checkOutDate != null) {
+      // Save the booking to the database
+      try {
+        final id = await BookingDatabaseService.createItem(
+          widget.data['title'],
+          widget.data['UrlToImage'],
+          _checkInDate!.toLocal().toString().split(' ')[0],
+          _checkOutDate!.toLocal().toString().split(' ')[0],
+        );
+        print('Booking saved with id: $id');
+
+        // Show notification
+        Noto.showNoto(
+          title: 'Booking Confirmed',
+          body: 'Your booking has been confirmed.',
+          payload: 'booking_confirmed',
+        );
+
+        // Navigate to Booking List Page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BottNavBar(),
+          ),
+        );
+      } catch (error) {
+        print('Failed to save booking: $error');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save booking. Please try again.')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all the fields and select dates')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +110,7 @@ class _BookingPageState extends State<BookingPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Navigate back to previous page
           },
         ),
       ),
@@ -36,13 +121,13 @@ class _BookingPageState extends State<BookingPage> {
           child: ListView(
             children: [
               Text(
-                widget.hotelData['title'] ?? 'Hotel Name',
+                widget.data['title'] ?? 'Hotel Name',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16),
-              TextFormField(
+              _buildTextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+                label: 'Name',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your name';
@@ -51,9 +136,9 @@ class _BookingPageState extends State<BookingPage> {
                 },
               ),
               SizedBox(height: 16),
-              TextFormField(
+              _buildTextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                label: 'Email',
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -63,9 +148,9 @@ class _BookingPageState extends State<BookingPage> {
                 },
               ),
               SizedBox(height: 16),
-              TextFormField(
+              _buildTextFormField(
                 controller: _phoneController,
-                decoration: InputDecoration(labelText: 'Phone'),
+                label: 'Phone',
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -81,19 +166,11 @@ class _BookingPageState extends State<BookingPage> {
                     ? 'Select Date'
                     : _checkInDate!.toLocal().toString().split(' ')[0]),
                 trailing: Icon(Icons.calendar_today),
-                onTap: () async {
-                  DateTime? date = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2101),
-                  );
-                  if (date != null) {
-                    setState(() {
-                      _checkInDate = date;
-                    });
-                  }
-                },
+                onTap: () => _selectDate(context, _checkInDate, (date) {
+                  setState(() {
+                    _checkInDate = date;
+                  });
+                }),
               ),
               SizedBox(height: 16),
               ListTile(
@@ -118,25 +195,7 @@ class _BookingPageState extends State<BookingPage> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate() &&
-                      _checkInDate != null &&
-                      _checkOutDate != null) {
-                    // Perform booking action
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Booking confirmed!')),
-                    );
-
-                    // Navigate to home page
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(
-                              'Please fill all the fields and select dates')),
-                    );
-                  }
-                },
+                onPressed: _confirmBooking,
                 child: Text('Confirm Booking'),
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 15),

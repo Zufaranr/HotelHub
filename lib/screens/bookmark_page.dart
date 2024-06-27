@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:hotelhub/database/database_service.dart';
 import 'package:hotelhub/screens/hotel_detail_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BookmarkPage extends StatefulWidget {
   const BookmarkPage({Key? key}) : super(key: key);
@@ -57,6 +54,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Bookmarks'),
+        automaticallyImplyLeading: false,
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())

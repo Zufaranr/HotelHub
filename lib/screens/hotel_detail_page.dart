@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:hotelhub/components/facility_cattegory_icon.dart';
 import 'package:hotelhub/database/database_service.dart';
@@ -74,12 +71,15 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                                   ),
                                   onPressed: () {
                                     DatabaseService.createItem(
-                                        widget.data['title'],
-                                        widget.data['UrlToImage'],
-                                        widget.data['category'],
-                                        widget.data['deskripsi'],
-                                        widget.data['lokasi'],
-                                        widget.data['price']);
+                                      widget.data['title'],
+                                      widget.data['UrlToImage'],
+                                      widget.data['category'],
+                                      widget.data['deskripsi'],
+                                      widget.data['lokasi'],
+                                      widget.data['price'],
+                                      // widget.data['Check-in'],
+                                      // widget.data['Check-out'],
+                                    );
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hotelhub/screens/bookinglist_page.dart';
 import 'package:hotelhub/screens/bookmark_page.dart';
 import 'package:hotelhub/screens/homepage.dart';
 import 'package:hotelhub/screens/profile_page.dart';
@@ -22,6 +23,8 @@ class BottNavBar extends StatelessWidget {
           destinations: [
             NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
             NavigationDestination(
+                icon: Icon(Icons.view_list), label: 'Bookings'),
+            NavigationDestination(
                 icon: Icon(Icons.bookmark), label: 'Bookmark'),
             NavigationDestination(
                 icon: Icon(Icons.account_circle), label: 'Profile'),
@@ -36,5 +39,10 @@ class BottNavBar extends StatelessWidget {
 class BottNavBarController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
 
-  final List<Widget> screens = [HomePage(), BookmarkPage(), ProfilePage()];
+  final List<Widget> screens = [
+    HomePage(),
+    BookingListPage(),
+    BookmarkPage(),
+    ProfilePage()
+  ];
 }

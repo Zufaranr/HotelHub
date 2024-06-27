@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:hotelhub/components/bottnavbar.dart';
 import 'package:hotelhub/screens/login_page.dart';
 
 class SplashScreen extends StatefulWidget {

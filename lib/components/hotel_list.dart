@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hotelhub/screens/booking_page.dart';
 import 'package:hotelhub/screens/hotel_detail_page.dart';
 
 class HotelList extends StatelessWidget {
@@ -39,7 +40,7 @@ class NewHotelList extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HotelDetailPage(data,true),
+            builder: (context) => HotelDetailPage(data, true),
           ),
         );
       },
@@ -63,7 +64,7 @@ class NewHotelList extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               child: Image.network(
-                data['UrlToImage'], 
+                data['UrlToImage'],
                 height: 150,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -100,7 +101,12 @@ class NewHotelList extends StatelessWidget {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          // Action when button is pressed
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BookingPage(data),
+                            ),
+                          );
                         },
                         child: Text('Pesan'),
                       ),

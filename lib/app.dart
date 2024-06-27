@@ -2,11 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hotelhub/components/my_app.dart';
 import 'package:hotelhub/screens/splash_screen.dart';
+import 'package:hotelhub/services/notif.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await Noto.init();
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       appId: '1:114539225164:android:68e0c158cf52facc2794e9',
