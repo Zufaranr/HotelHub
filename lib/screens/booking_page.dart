@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hotelhub/components/bottnavbar.dart';
-import 'package:hotelhub/database/booking_database_service.dart';
+import 'package:hotelhub/services/firestore_service.dart';
 import 'package:hotelhub/services/notif.dart';
 
 class BookingPage extends StatefulWidget {
@@ -19,6 +19,7 @@ class _BookingPageState extends State<BookingPage> {
   final TextEditingController _phoneController = TextEditingController();
   DateTime? _checkInDate;
   DateTime? _checkOutDate;
+  final FirebaseDatabaseService _dbService = FirebaseDatabaseService();
 
   @override
   void initState() {
@@ -61,43 +62,49 @@ class _BookingPageState extends State<BookingPage> {
     }
   }
 
-  Future<void> _confirmBooking() async {
+  void _confirmBooking() async {
     if (_formKey.currentState!.validate() &&
         _checkInDate != null &&
-        _checkOutDate != null) {
-      // Save the booking to the database
-      try {
-        final id = await BookingDatabaseService.createItem(
-          widget.data['title'],
-          widget.data['UrlToImage'],
-          _checkInDate!.toLocal().toString().split(' ')[0],
-          _checkOutDate!.toLocal().toString().split(' ')[0],
-        );
-        print('Booking saved with id: $id');
+        _checkOutDate != null &&
+        _checkOutDate!.isAfter(_checkInDate!)) {
+      final booking = {
+        'title': widget.data['title'],
+        'urlToImage': widget.data['UrlToImage'],
+        'checkInDate': _checkInDate!.toLocal().toString().split(' ')[0],
+        'checkOutDate': _checkOutDate!.toLocal().toString().split(' ')[0],
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'phone': _phoneController.text,
+      };
 
-        // Show notification
-        Noto.showNoto(
-          title: 'Booking Confirmed',
-          body: 'Your booking has been confirmed.',
-          payload: 'booking_confirmed',
-        );
+      await _dbService.createBooking(
+        booking['title'],
+        booking['urlToImage'],
+        booking['checkInDate'],
+        booking['checkOutDate'],
+        booking['name'],
+        booking['email'],
+        booking['phone'],
+      );
 
-        // Navigate to Booking List Page
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BottNavBar(),
-          ),
-        );
-      } catch (error) {
-        print('Failed to save booking: $error');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save booking. Please try again.')),
-        );
-      }
+      // Show notification
+      Noto.showNoto(
+        title: 'Booking Confirmed',
+        body: 'Your booking has been confirmed.',
+        payload: 'booking_confirmed',
+      );
+
+      // Navigate to Booking List Page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BottNavBar(),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all the fields and select dates')),
+        SnackBar(
+            content: Text('Please fill all the fields and select valid dates')),
       );
     }
   }
@@ -179,19 +186,11 @@ class _BookingPageState extends State<BookingPage> {
                     ? 'Select Date'
                     : _checkOutDate!.toLocal().toString().split(' ')[0]),
                 trailing: Icon(Icons.calendar_today),
-                onTap: () async {
-                  DateTime? date = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now().add(Duration(days: 1)),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2101),
-                  );
-                  if (date != null) {
-                    setState(() {
-                      _checkOutDate = date;
-                    });
-                  }
-                },
+                onTap: () => _selectDate(context, _checkOutDate, (date) {
+                  setState(() {
+                    _checkOutDate = date;
+                  });
+                }),
               ),
               SizedBox(height: 16),
               ElevatedButton(

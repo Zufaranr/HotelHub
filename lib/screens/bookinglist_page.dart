@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hotelhub/database/booking_database_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hotelhub/services/firestore_service.dart';
 
 class BookingListPage extends StatefulWidget {
   @override
@@ -7,22 +8,38 @@ class BookingListPage extends StatefulWidget {
 }
 
 class _BookingListPageState extends State<BookingListPage> {
-  List<Map<String, dynamic>> _bookings = [];
-  bool _isLoading = true;
+  final FirebaseDatabaseService _firestoreService = FirebaseDatabaseService();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadBookings();
+  Future<void> _confirmDeleteBooking(String id) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Booking'),
+        content: Text('Are you sure you want to delete this booking?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteBooking(id);
+            },
+            child: Text('Delete'),
+          ),
+        ],
+      ),
+    );
   }
 
-  Future<void> _loadBookings() async {
-    List<Map<String, dynamic>> bookings =
-        await BookingDatabaseService.getItems();
-    setState(() {
-      _bookings = bookings;
-      _isLoading = false;
-    });
+  Future<void> _deleteBooking(String id) async {
+    await _firestoreService.deleteBooking(id);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('List Booking berhasil dihapus'),
+      ),
+    );
   }
 
   @override
@@ -30,33 +47,85 @@ class _BookingListPageState extends State<BookingListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Booking List'),
-        automaticallyImplyLeading: false, // Removes the back button
+        automaticallyImplyLeading: false,
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _bookings.isEmpty
-              ? Center(child: Text('No bookings yet'))
-              : ListView.builder(
-                  itemCount: _bookings.length,
-                  itemBuilder: (context, index) {
-                    final booking = _bookings[index];
-                    return Card(
-                      margin: EdgeInsets.all(8),
-                      elevation: 4,
-                      child: ListTile(
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _firestoreService.getBookings(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text('No bookings yet'));
+          }
+
+          final bookings = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: bookings.length,
+            itemBuilder: (context, index) {
+              final booking = bookings[index];
+              final data = booking.data() as Map<String, dynamic>;
+
+              return Card(
+                margin: EdgeInsets.all(8),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(booking['UrlToImage'] ??
+                          radius: 30,
+                          backgroundImage: NetworkImage(data['urlToImage'] ??
                               'https://via.placeholder.com/150'),
                         ),
-                        title: Text(booking['title'] ?? 'Unknown Hotel'),
-                        subtitle: Text(
-                          'Check-in: ${booking['checkIn'] ?? 'N/A'}\n'
-                          'Check-out: ${booking['checkOut'] ?? 'N/A'}',
+                        title: Text(
+                          data['title'] ?? 'Unknown Hotel',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 8),
+                            Text('Name: ${data['name'] ?? 'N/A'}'),
+                            Text('Email: ${data['email'] ?? 'N/A'}'),
+                            Text('Phone: ${data['phone'] ?? 'N/A'}'),
+                            SizedBox(height: 8),
+                            Text('Check-in: ${data['checkInDate']}'),
+                            Text('Check-out: ${data['checkOutDate']}'),
+                          ],
                         ),
                       ),
-                    );
-                  },
+                      ButtonBar(
+                        alignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => _confirmDeleteBooking(booking.id),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

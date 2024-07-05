@@ -8,24 +8,30 @@ class Noto {
 
   // on tap on any notification
   static void onNotificationTap(NotificationResponse notificationResponse) {
-    if (notificationResponse.payload != null) {
+    if (notificationResponse.payload != null &&
+        notificationResponse.payload!.isNotEmpty) {
       onClickNotification.add(notificationResponse.payload!);
     }
   }
 
   // initialize the local notifications
-  static Future init() async {
-    // initialise the plugin. app_icon needs to be added as a drawable resource to the Android head project
+  static Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings initializationSettingsDarwin =
-        DarwinInitializationSettings();
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-            android: initializationSettingsAndroid,
-            iOS: initializationSettingsDarwin);
+    final DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings(
+      onDidReceiveLocalNotification: (id, title, body, payload) async {
+        onClickNotification.add(payload ?? '');
+      },
+    );
 
-    // request notification permissions (iOS only)
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+    );
+
+    // Request permissions for iOS
     await _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin>()
@@ -35,38 +41,54 @@ class Noto {
           sound: true,
         );
 
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onDidReceiveNotificationResponse: onNotificationTap,
-        onDidReceiveBackgroundNotificationResponse: onNotificationTap);
+    // Initialize the plugin
+    await _flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: onNotificationTap,
+      onDidReceiveBackgroundNotificationResponse: onNotificationTap,
+    );
   }
 
   // show a simple notification
-  static Future showNoto({
+  static Future<void> showNoto({
     required String title,
     required String body,
     required String payload,
   }) async {
     const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('hotel1_channel_id', 'hotel_channel',
-            channelDescription: 'your channel description',
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker');
+        AndroidNotificationDetails(
+      'hotel1_channel_id',
+      'hotel_channel',
+      channelDescription: 'your channel description',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
-    await _flutterLocalNotificationsPlugin
-        .show(0, title, body, notificationDetails, payload: payload)
-        .then((_) => print('Notification shown'))
-        .catchError((e) => print('Failed to show notification: $e'));
+
+    try {
+      await _flutterLocalNotificationsPlugin.show(
+        0,
+        title,
+        body,
+        notificationDetails,
+        payload: payload,
+      );
+      print('Notification shown');
+    } catch (e) {
+      print('Failed to show notification: $e');
+    }
   }
 
   // close a specific channel notification
-  static Future cancel(int id) async {
+  static Future<void> cancel(int id) async {
     await _flutterLocalNotificationsPlugin.cancel(id);
   }
 
   // close all the notifications available
-  static Future cancelAll() async {
+  static Future<void> cancelAll() async {
     await _flutterLocalNotificationsPlugin.cancelAll();
   }
 }

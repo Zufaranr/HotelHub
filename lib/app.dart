@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hotelhub/components/bottnavbar.dart';
 import 'package:hotelhub/components/my_app.dart';
 import 'package:hotelhub/screens/splash_screen.dart';
 import 'package:hotelhub/services/notif.dart';
